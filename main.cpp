@@ -1,10 +1,9 @@
 #include <iostream>
 #include <locale>
+#include "Hammurabi/Hammurabi.h"
 
-int main(int, char**){
+int main() {
     setlocale(LC_ALL, "ru_RU.UTF-8");
 
-    std::cout << "Привет на русском!\n";
-    getchar();
-    return 0;
+    return Hammurabi::main();
 }
