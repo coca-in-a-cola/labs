@@ -42,3 +42,30 @@ target_include_directories(${PROJECT_NAME}
 # Для отладки - проверяем что все найдено
 message(STATUS "Project name: ${PROJECT_NAME}")
 message(STATUS "Building labs project with C++${CMAKE_CXX_STANDARD}")
+
+# Указываем директорию с ресурсами
+set(DATA_DIR "${CMAKE_SOURCE_DIR}/data")
+
+# Проверяем существование директории data
+if(EXISTS ${DATA_DIR})
+    message(STATUS "Found data directory: ${DATA_DIR}")
+    
+    # Определяем куда копировать данные
+    set(DATA_DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data")
+    
+    # Копируем директорию data в билд
+    file(COPY ${DATA_DIR} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    message(STATUS "Data directory copied to: ${DATA_DESTINATION}")
+    
+    # Добавляем пользовательскую цель для копирования данных
+    add_custom_target(CopyData ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${DATA_DIR}"
+            "${DATA_DESTINATION}"
+        COMMENT "Copying data files to build directory"
+    )
+else()
+    message(WARNING "Data directory not found: ${DATA_DIR}")
+    # Создаем пустую директорию для сборки
+    file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data")
+endif()

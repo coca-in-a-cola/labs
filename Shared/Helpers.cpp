@@ -18,8 +18,9 @@ namespace Helpers {
             std::cout << std::format("file not found in filepath {}", fullPath.string()) << std::endl;
         }
 
-        while (file >> content) {
-            std::cout << content;
+        std::string line;
+        while (std::getline(file, line)) {
+            std::cout << line << std::endl;
         }
     }
 }
