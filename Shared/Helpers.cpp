@@ -1,17 +1,21 @@
 ﻿#pragma once
-
 #include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <format>
+#include <stdio.h>
 #include "Helpers.h"
 
 namespace Helpers {
 
+    std::filesystem::path getFullPath(std::string& filepath) {
+        return std::filesystem::current_path() / filepath;
+    }
+
     void drawFile(std::string filepath) {
         std::string content;
-        auto fullPath = std::filesystem::current_path() / filepath;
+        auto fullPath = getFullPath(filepath);
         std::ifstream file(fullPath);
 
         if (!file.is_open()) {

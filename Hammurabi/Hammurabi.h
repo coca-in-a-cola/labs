@@ -5,24 +5,17 @@
 #include <utility>
 #include <vector>
 #include <stdint.h>
-
-typedef int32_t id_t;
-constexpr id_t kIdUndef = 0;
+#include "GameData.h"
 
 namespace Hammurabi {
-
-    struct GameData {
-    };
 
     class Game {
     public:
         Game();
         
-        void Initialize();
-        void Initialize(GameData* gameData);
-
+        void Load();
         void Run();
-
+        void Save();
     private:
         GameData _data;
         

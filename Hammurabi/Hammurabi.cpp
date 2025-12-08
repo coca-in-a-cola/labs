@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "Hammurabi.h"
+#include "GameData.h"
 #include "../Shared/Helpers.h"
 
 namespace Hammurabi {
@@ -10,13 +11,16 @@ namespace Hammurabi {
         _data = GameData{};
     }
 
-    void Game::Initialize() {
-        Initialize(nullptr);
-    }
+    void Game::Load() {
+        GameData gameData;
+        auto savedGamePath = std::string("../data/auto.save");
+        auto isLoaded = Helpers::loadObject<GameData>(gameData, savedGamePath);
 
-    void Game::Initialize(GameData* gameData) {
-        if (gameData) {
-            _data = *gameData;
+        if (isLoaded) {
+            std::cout << "Загружена сохраненная игра" << std::endl;
+            _data = gameData;
+        } else {
+            _data = initialGameData;
         }
     }
 
@@ -37,12 +41,14 @@ namespace Hammurabi {
 
     int main() {
         try {
-			Helpers::drawFile("../data/main.txt");
-
             auto game = Game();
-            game.Initialize();
-        
+
+            Helpers::drawFile("../data/main.txt");
             std::cin.get();
+
+            game.Load();
+            std::cin.get();
+            game.Run();
             return 0;
         }
         catch (...) {
