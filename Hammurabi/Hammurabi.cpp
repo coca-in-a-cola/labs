@@ -26,9 +26,9 @@ namespace Hammurabi {
 
     void Game::Run() {
         while (_isRunning) {
+            Render();
             ProcessInput();
             Update();
-            Render();
             _isRunning = false;
         }
     }
@@ -37,18 +37,21 @@ namespace Hammurabi {
 
     void Game::Update() { }
 
-    void Game::Render() { }
+    void Game::Render() {
+        Helpers::clearConsole();
+        Helpers::drawFile("../data/render.txt");
+        std::cout << "Мой повелитель, соизволь поведать тебе" << std::endl;
+        std::cout << std::format("В году {} твоего высочайшего правления", _data.year) << std::endl;
+    }
 
     int main() {
         try {
             auto game = Game();
-
             Helpers::drawFile("../data/main.txt");
             std::cin.get();
-
             game.Load();
-            std::cin.get();
             game.Run();
+            std::cin.get();
             return 0;
         }
         catch (...) {

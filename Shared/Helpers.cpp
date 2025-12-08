@@ -5,6 +5,7 @@
 #include <string>
 #include <format>
 #include <stdio.h>
+#include <cstdlib>
 #include "Helpers.h"
 
 namespace Helpers {
@@ -26,5 +27,13 @@ namespace Helpers {
         while (std::getline(file, line)) {
             std::cout << line << std::endl;
         }
+    }
+
+    void clearConsole() {
+    #if defined(_WIN32) || defined(WIN32)
+        system("cls");
+    #else
+        system("clear");
+    #endif
     }
 }

@@ -8,6 +8,8 @@
 namespace Helpers {
     void drawFile(std::string filepath);
 
+    void clearConsole();
+
     std::filesystem::path getFullPath(std::string& filepath);
 
     template<typename T>
