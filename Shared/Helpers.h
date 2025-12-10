@@ -5,12 +5,15 @@
 #include <vector>
 #include <string.h>
 
+typedef int32_t val_t;
+
 namespace Helpers {
     void drawFile(std::string filepath);
 
     void clearConsole();
 
     std::filesystem::path getFullPath(std::string& filepath);
+    val_t randRange(val_t from, val_t to);
 
     template<typename T>
     void saveObject(T object, std::string& filepath) {
@@ -30,4 +33,5 @@ namespace Helpers {
         input_file.read((char*)&outObject, sizeof(outObject));
         return true;
     }
+    
 }

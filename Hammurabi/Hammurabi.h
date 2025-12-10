@@ -22,7 +22,8 @@ namespace Hammurabi {
         void ProcessInput();
         void Update();
         void Render();
-        
+        void PreUpdate();
+        void RenderDeclineIncreace();
         bool _isRunning = true;
     };
 

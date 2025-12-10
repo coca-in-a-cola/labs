@@ -6,6 +6,7 @@
 #include <format>
 #include <stdio.h>
 #include <cstdlib>
+#include <ctime>
 #include "Helpers.h"
 
 namespace Helpers {
@@ -27,6 +28,11 @@ namespace Helpers {
         while (std::getline(file, line)) {
             std::cout << line << std::endl;
         }
+    }
+
+    val_t randRange(val_t from, val_t to) {
+        srand(time(0));
+        return from + (rand() % (to - from));
     }
 
     void clearConsole() {

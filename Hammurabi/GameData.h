@@ -19,6 +19,8 @@ namespace Hammurabi {
         val_t increace;
         // цена за акр земли
         val_t arcPrice;
+        // сколько пшеницы было собрано
+        val_t wheatIncreace;
         // сколько бушелей пшеницы будет собрано с 1 акра
         val_t fertility;
         // сколько будет крыс (каждая крыса съест 1 бушель пшеницы)
@@ -27,5 +29,5 @@ namespace Hammurabi {
         bool is_plague;
     };
 
-    constexpr GameData initialGameData = { 100, 2800, 1000, 0, 0, 0, 0, 0, 0, false };
+    constexpr GameData initialGameData = { 100, 2800, 1000, 1, 0, 0, 0, 0, 0, 0, false };
 }
