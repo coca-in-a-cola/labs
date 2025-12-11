@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "Hammurabi.h"
-#include "GameData.h"
+#include "Structs.h"
 #include "../Shared/Helpers.h"
 
 namespace Hammurabi {
@@ -28,11 +28,14 @@ namespace Hammurabi {
 
     void Game::Run() {
         while (_isRunning) {
-            PreUpdate();
+            PreRender();
             Render();
             ProcessInput();
             Update();
+            PostUpdate();
         }
+
+        Finish();
     }
 
     void Game::ProcessInput() {
@@ -62,10 +65,15 @@ namespace Hammurabi {
     }
 
     bool Game::ValidateInput() {
+        if (_inputData.buyAcres < 0 || _inputData.plantAcres < 0 || _inputData.eatBushels < 0) {
+            return false;
+        }
+
         val_t currentBushels = _data.wheatBushels
+            - _inputData.eatBushels
             - _inputData.buyAcres * _data.arcPrice
             - _inputData.plantAcres * 0.5f;
-
+        
         if (currentBushels < 0) {
             return false;
         }
@@ -77,7 +85,7 @@ namespace Hammurabi {
         return true;
     }
 
-    void Game::PreUpdate() {
+    void Game::PreRender() {
         auto arcPrice = Helpers::randRange(17, 26);
         _data.arcPrice = arcPrice;
     }
@@ -113,7 +121,79 @@ namespace Hammurabi {
             newData.population /= 2;
         }
 
+        CheckCrit(newData);
+        CalculateStats(newData);
         _data = newData;
+    }
+
+    void Game::PostUpdate() {
+        _timeleft--;
+
+        if (!_timeleft) {
+            _isRunning = false;
+        }
+
+        _data.year++;
+    }
+
+    void Game::CheckCrit(const GameData& newData) {
+        if (newData.decline >= _data.population * 0.45f) {
+            _isRunning = false;
+        }
+    }
+
+    void Game::CalculateStats(const GameData& newData) {
+        float_t deathRate = newData.decline / _data.population;
+        float_t acresPerCitizen = newData.population / newData.arces;
+        
+        _stats.acresPerCitizen = acresPerCitizen;
+        _stats.deathRate = (_stats.deathRate * (_data.year - 1) + deathRate) / _data.year;
+
+        _stats.grade = 0;
+        if (_timeleft) {
+            return;
+        }
+
+        if (_stats.deathRate <= 0.33f && acresPerCitizen >= 7) {
+            _stats.grade++;
+        }
+
+        if (_stats.deathRate <= 0.10f && acresPerCitizen >= 9) {
+            _stats.grade++;
+        }
+
+        if (_stats.acresPerCitizen <= 0.03f && acresPerCitizen >= 10) {
+            _stats.grade++;
+        }
+    }
+
+    void Game::Finish() {
+        Helpers::clearConsole();
+
+        if (!_stats.grade) {
+            Helpers::drawFile("../data/grade-0.txt");
+            Helpers::printsh("Из-за вашей некомпетентности в управлении, народ устроил бунт, и изгнал вас из города.");
+            Helpers::printsh("Теперь вы вынуждены влачить жалкое существование в изгнании");
+            return;
+        }
+
+        if (_stats.grade == 1) {
+            Helpers::drawFile("../data/grade-1.txt");
+            Helpers::printsh("Вы правили железной рукой, подобно Нерону и Ивану Грозному.");
+            Helpers::printsh("Народ вздохнул с облегчением, и никто больше не желает видеть вас правителем");
+            return;
+        }
+
+        if (_stats.grade == 2) {
+            Helpers::drawFile("../data/grade-2.txt");
+            Helpers::printsh("Вы справились вполне неплохо");
+            Helpers::printsh("У вас, конечно, есть недоброжелатели, но многие хотели бы увидеть вас во главе города снова");
+            return;
+        }
+
+        Helpers::drawFile("../data/grade-3.txt");
+        Helpers::printsh("Фантастика!");
+        Helpers::printsh("Карл Великий, Дизраэли и Джефферсон вместе не справились бы лучше");
     }
 
     void Game::Render() {
@@ -126,7 +206,7 @@ namespace Hammurabi {
         RenderDeclineIncreace();
 
         if (_data.is_plague) {
-            std::cout << "Чума уничтожила половину населения!";
+            Helpers::printsh("Чума уничтожила половину населения!");
         }
 
         Helpers::prints("Население города сейчас составляет {} человек", _data.population);
@@ -170,7 +250,14 @@ namespace Hammurabi {
             std::cin.get();
             game.Load();
             game.Run();
-            std::cin.get();
+
+            std::string str = "";
+            char ch;
+            Helpers::prints("Нажмите [ESCAPE], чтобы выйти");
+            while ((ch = std::cin.get()) != 27) {
+                str += ch;
+            }
+
             return 0;
         }
         catch (...) {

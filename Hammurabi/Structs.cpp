@@ -1,5 +1,5 @@
 #pragma once
-#include "GameData.h"
+#include "Structs.h"
 
 namespace Hammurabi {
 }

@@ -38,4 +38,13 @@ namespace Hammurabi {
         // Сколько акров земли повелеваешь засеять?
         val_t plantAcres;
     };
+
+    struct Stats {
+        // Среднеготовой процент умерших от голода P
+        float_t deathRate;
+        // Количество акров земли на одного жителя L
+        float_t acresPerCitizen;
+        // общий рейтинг (обычно от 0 до 4)
+        val_t grade;
+    };
 }
