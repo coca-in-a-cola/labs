@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
-
-typedef int32_t val_t;
+#include "../Shared/Helpers.h"
 
 namespace Hammurabi {
     // все статы даны строго на начало хода. три верхние валюты вычисляются последними
@@ -30,4 +29,13 @@ namespace Hammurabi {
     };
 
     constexpr GameData initialGameData = { 100, 2800, 1000, 1, 0, 0, 0, 0, 0, 0, false };
+
+    struct InputData {
+        // Сколько акров прикажешь купить?
+        val_t buyAcres;
+        // Сколько бушелей пшеницы повелеваешь съесть?
+        val_t eatBushels;
+        // Сколько акров земли повелеваешь засеять?
+        val_t plantAcres;
+    };
 }

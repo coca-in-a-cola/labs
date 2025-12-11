@@ -18,8 +18,10 @@ namespace Hammurabi {
         void Save();
     private:
         GameData _data;
-        
+        InputData _inputData;
+
         void ProcessInput();
+        bool ValidateInput();
         void Update();
         void Render();
         void PreUpdate();

@@ -31,8 +31,13 @@ namespace Helpers {
     }
 
     val_t randRange(val_t from, val_t to) {
-        srand(time(0));
+        srand(static_cast <unsigned> (time(0)));
         return from + (rand() % (to - from));
+    }
+
+    float_t randRange(float_t from, float_t to) {
+        srand(static_cast <unsigned> (time(0)));
+        return from + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(to-from)));
     }
 
     void clearConsole() {
