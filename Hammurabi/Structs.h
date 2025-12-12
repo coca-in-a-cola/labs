@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <string_view>
+#include <array>
 #include "../Shared/Helpers.h"
 
 namespace Hammurabi {
@@ -28,8 +30,6 @@ namespace Hammurabi {
         bool is_plague;
     };
 
-    constexpr GameData initialGameData = { 100, 2800, 1000, 1, 0, 0, 0, 0, 0, 0, false };
-
     struct InputData {
         // Сколько акров прикажешь купить?
         val_t buyAcres;
@@ -47,4 +47,16 @@ namespace Hammurabi {
         // общий рейтинг (обычно от 0 до 4)
         val_t grade;
     };
+
+    struct GradeCondition {
+        float_t maxDeathRate;
+        float_t minAcresPerCitizen;
+    };
+
+    struct Ending {
+        val_t grade;
+        std::string_view image;
+        std::array<std::string_view, 2> lines;
+    };
+
 }

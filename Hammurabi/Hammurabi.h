@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 #include <stdint.h>
+#include "Config.h"
 #include "Structs.h"
 
 namespace Hammurabi {
@@ -19,7 +20,7 @@ namespace Hammurabi {
         GameData _data;
         InputData _inputData;
         Stats _stats = { .0f, .0f, 0 };
-        val_t _timeleft = 3;
+        val_t _timeleft = GAME_DURATION;
 
         void ProcessInput();
         bool ValidateInput();

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include "Config.h"
 #include "Hammurabi.h"
 #include "Structs.h"
 #include "../Shared/Helpers.h"
@@ -15,20 +16,23 @@ namespace Hammurabi {
 
     void Game::Load() {
         GameData gameData;
-        auto location = std::string(AUTOSAVE_LOCATION);
-        auto isLoaded = Helpers::loadObject<GameData>(gameData, location);
+        auto hasSave = Helpers::loadObject<GameData>(gameData, AUTOSAVE_LOCATION);
 
-        if (isLoaded) {
-            Helpers::printsh("[Загружена сохраненная игра]");
-            _data = gameData;
-        } else {
-            _data = initialGameData;
+        if (hasSave) {
+            Helpers::printsh("[Найдена сохраненная игра]");
+            char c = Helpers::input<char>("Загрузить сохраненную игру? [y/n]");
+
+            if (c == 'y' || c == 'Y') {
+                _data = gameData;
+                return;
+            }
         }
+
+        _data = initialGameData;
     }
 
     void Game::Autosave() {
-        auto location = std::string(AUTOSAVE_LOCATION);
-        Helpers::saveObject<GameData>(_data, location);
+        Helpers::saveObject<GameData>(_data, AUTOSAVE_LOCATION);
     }
 
     void Game::Run() {
@@ -78,13 +82,13 @@ namespace Hammurabi {
         val_t currentBushels = _data.wheatBushels
             - _inputData.eatBushels
             - _inputData.buyAcres * _data.arcPrice
-            - _inputData.plantAcres * 0.5f;
+            - _inputData.plantAcres * SEED_COEF;
         
         if (currentBushels < 0) {
             return false;
         }
 
-        if (_inputData.plantAcres > _data.population * 10) {
+        if (_inputData.plantAcres > _data.population * CULTIVATION) {
             return false;
         }
 
@@ -92,7 +96,7 @@ namespace Hammurabi {
     }
 
     void Game::PreRender() {
-        auto arcPrice = Helpers::randRange(17, 26);
+        auto arcPrice = Helpers::randRange(INCREACE_MIN, INCREACE_MAX);
         _data.arcPrice = arcPrice;
     }
 
@@ -102,30 +106,30 @@ namespace Hammurabi {
 
         newData.arces = _data.arces + _inputData.buyAcres;
 
-        val_t currentBushels = _data.wheatBushels
+        newData.wheatBushels = _data.wheatBushels
             - _inputData.eatBushels
             - _inputData.buyAcres * _data.arcPrice
-            - _inputData.plantAcres * 0.5f;
+            - _inputData.plantAcres * SEED_COEF;
 
-        newData.fertility = Helpers::randRange(1, 6);
+        newData.fertility = Helpers::randRange(FERTILITY_MIN, FERTILITY_MAX);
         newData.wheatIncreace = _inputData.plantAcres * newData.fertility;
 
-        newData.decline = std::max(_data.population - _inputData.eatBushels / 20, 0);
+        newData.decline = std::max(_data.population - _inputData.eatBushels / WHEAT_CONSUMPTION, 0);
 
-        auto increace = newData.decline / 2 + (5 - newData.fertility) * currentBushels / 600 + 1;
-        newData.increace = std::clamp(increace, 0, 50);
+        auto increace = INCREASE_F(newData);
+        newData.increace = std::clamp(increace, INCREACE_MIN, INCREACE_MAX);
 
         newData.population = _data.population + newData.increace - newData.decline;
 
-        newData.wheatBushels = currentBushels + newData.wheatIncreace;
-        newData.pests = newData.wheatBushels * Helpers::randRange(.0f, 0.07f);
+        newData.wheatBushels += newData.wheatIncreace;
+        newData.pests = newData.wheatBushels * Helpers::randRange(PESTS_MIN, PESTS_MAX);
         newData.wheatBushels -= newData.pests;
 
         newData.is_plague = false;
 
-        if (Helpers::randRange(1, 100) <= 15) {
+        if (Helpers::randRange(.0f, 1.0f) <= PLAGUE_CHANCE) {
             newData.is_plague = true;
-            newData.population /= 2;
+            newData.population *= PLAGUE_MORTALITY;
         }
 
         CheckCrit(newData);
@@ -141,7 +145,7 @@ namespace Hammurabi {
     }
 
     void Game::CheckCrit(const GameData& newData) {
-        if (newData.decline >= _data.population * 0.45f) {
+        if (newData.decline >= _data.population * DEATH_CRIT_COEF) {
             _isRunning = false;
         }
     }
@@ -159,16 +163,8 @@ namespace Hammurabi {
             return;
         }
 
-        if (deathRate <= 0.33f && acresPerCitizen >= 7) {
-            grade++;
-        }
-
-        if (deathRate <= 0.10f && acresPerCitizen >= 9) {
-            grade++;
-        }
-
-        if (deathRate <= 0.03f && acresPerCitizen >= 10) {
-            grade++;
+        for (const auto& rule : GRADES_TABLE) {
+            if (deathRate <= rule.maxDeathRate && acresPerCitizen >= rule.minAcresPerCitizen) ++grade;
         }
 
         _stats = { deathRate, acresPerCitizen, grade };
@@ -176,31 +172,26 @@ namespace Hammurabi {
 
     void Game::Finish() {
         Helpers::clearConsole();
+        Helpers::removeFile(AUTOSAVE_LOCATION);
 
-        if (!_stats.grade) {
-            Helpers::drawFile("../data/grade-0.txt");
-            Helpers::printsh("Из-за вашей некомпетентности в управлении, народ устроил бунт, и изгнал вас из города.");
-            Helpers::printsh("Теперь вы вынуждены влачить жалкое существование в изгнании");
-            return;
+        const Ending* ending = nullptr;
+        for (const auto& e : ENDINGS) {
+            if (e.grade == _stats.grade) {
+                ending = &e;
+                break;
+            }
         }
 
-        if (_stats.grade == 1) {
-            Helpers::drawFile("../data/grade-1.txt");
-            Helpers::printsh("Вы правили железной рукой, подобно Нерону и Ивану Грозному.");
-            Helpers::printsh("Народ вздохнул с облегчением, и никто больше не желает видеть вас правителем");
-            return;
+        if (!ending) {
+            ending = &ENDINGS[0];
         }
 
-        if (_stats.grade == 2) {
-            Helpers::drawFile("../data/grade-2.txt");
-            Helpers::printsh("Вы справились вполне неплохо");
-            Helpers::printsh("У вас, конечно, есть недоброжелатели, но многие хотели бы увидеть вас во главе города снова");
-            return;
+        Helpers::drawFile(std::string(ending->image));
+        for (auto line : ending->lines) {
+            Helpers::printsh(std::string(line));
         }
 
-        Helpers::drawFile("../data/grade-3.txt");
-        Helpers::printsh("Фантастика!");
-        Helpers::printsh("Карл Великий, Дизраэли и Джефферсон вместе не справились бы лучше");
+        char c = Helpers::input<char>("Игра окончена. Ваши последние слова");
     }
 
     void Game::Render() {
@@ -255,16 +246,9 @@ namespace Hammurabi {
             auto game = Game();
             Helpers::drawFile("../data/main.txt");
             std::cin.get();
+
             game.Load();
             game.Run();
-
-            std::string str = "";
-            char ch;
-            Helpers::prints("Введите [q], чтобы выйти");
-            while ((ch = std::cin.get()) != 113) {
-                str += ch;
-            }
-
             return 0;
         }
         catch (...) {

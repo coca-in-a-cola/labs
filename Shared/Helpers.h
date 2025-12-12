@@ -17,7 +17,7 @@ namespace Helpers {
     void clearConsole();
 
     std::filesystem::path getFullPath(const std::string& filepath);
-    bool removeFile(const std::string& filepath);
+    bool removeFile(const std::string filepath);
     val_t randRange(val_t from, val_t to);
     float_t randRange(float_t from, float_t to);
     std::string& ltrim(std::string& s);
@@ -25,7 +25,7 @@ namespace Helpers {
     std::string trim(std::string s);
 
     template<typename T>
-    void saveObject(T object, std::string& filepath) {
+    void saveObject(T object, std::string filepath) {
         auto fullPath = getFullPath(filepath);
         std::ofstream output_file(filepath, std::ios::binary);
         output_file.write((char*)&object, sizeof(object));
@@ -33,7 +33,7 @@ namespace Helpers {
     }
 
     template<typename T>
-    bool loadObject(T& outObject, std::string& filepath) {
+    bool loadObject(T& outObject, std::string filepath) {
         auto fullPath = getFullPath(filepath);
         std::ifstream input_file(fullPath, std::ios::binary);
         if (!input_file.is_open()) {
