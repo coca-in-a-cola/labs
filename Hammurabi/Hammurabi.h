@@ -8,14 +8,13 @@
 #include "Structs.h"
 
 namespace Hammurabi {
-
     class Game {
     public:
         Game();
         
         void Load();
         void Run();
-        void Save();
+        void Autosave();
     private:
         GameData _data;
         InputData _inputData;

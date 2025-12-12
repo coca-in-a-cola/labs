@@ -15,15 +15,20 @@ namespace Hammurabi {
 
     void Game::Load() {
         GameData gameData;
-        auto savedGamePath = std::string("../data/auto.save");
-        auto isLoaded = Helpers::loadObject<GameData>(gameData, savedGamePath);
+        auto location = std::string(AUTOSAVE_LOCATION);
+        auto isLoaded = Helpers::loadObject<GameData>(gameData, location);
 
         if (isLoaded) {
-            std::cout << "Загружена сохраненная игра";
+            Helpers::printsh("[Загружена сохраненная игра]");
             _data = gameData;
         } else {
             _data = initialGameData;
         }
+    }
+
+    void Game::Autosave() {
+        auto location = std::string(AUTOSAVE_LOCATION);
+        Helpers::saveObject<GameData>(_data, location);
     }
 
     void Game::Run() {
@@ -33,6 +38,7 @@ namespace Hammurabi {
             ProcessInput();
             Update();
             PostUpdate();
+            Autosave();
         }
 
         Finish();
@@ -97,6 +103,7 @@ namespace Hammurabi {
         newData.arces = _data.arces + _inputData.buyAcres;
 
         val_t currentBushels = _data.wheatBushels
+            - _inputData.eatBushels
             - _inputData.buyAcres * _data.arcPrice
             - _inputData.plantAcres * 0.5f;
 
@@ -123,17 +130,14 @@ namespace Hammurabi {
 
         CheckCrit(newData);
         CalculateStats(newData);
+        newData.year = ++_data.year;
         _data = newData;
     }
 
     void Game::PostUpdate() {
-        _timeleft--;
-
         if (!_timeleft) {
             _isRunning = false;
         }
-
-        _data.year++;
     }
 
     void Game::CheckCrit(const GameData& newData) {
@@ -143,28 +147,31 @@ namespace Hammurabi {
     }
 
     void Game::CalculateStats(const GameData& newData) {
-        float_t deathRate = newData.decline / _data.population;
-        float_t acresPerCitizen = newData.population / newData.arces;
+        float_t currentDeathRate = newData.decline / _data.population;
+        float_t acresPerCitizen = newData.arces / _data.population ;
         
-        _stats.acresPerCitizen = acresPerCitizen;
-        _stats.deathRate = (_stats.deathRate * (_data.year - 1) + deathRate) / _data.year;
+        float_t deathRate = (_stats.deathRate * (_data.year - 1) + currentDeathRate) / _data.year;
 
-        _stats.grade = 0;
-        if (_timeleft) {
+        val_t grade = 0;
+
+        if (--_timeleft) {
+            _stats = { deathRate, acresPerCitizen, grade };
             return;
         }
 
-        if (_stats.deathRate <= 0.33f && acresPerCitizen >= 7) {
-            _stats.grade++;
+        if (deathRate <= 0.33f && acresPerCitizen >= 7) {
+            grade++;
         }
 
-        if (_stats.deathRate <= 0.10f && acresPerCitizen >= 9) {
-            _stats.grade++;
+        if (deathRate <= 0.10f && acresPerCitizen >= 9) {
+            grade++;
         }
 
-        if (_stats.acresPerCitizen <= 0.03f && acresPerCitizen >= 10) {
-            _stats.grade++;
+        if (deathRate <= 0.03f && acresPerCitizen >= 10) {
+            grade++;
         }
+
+        _stats = { deathRate, acresPerCitizen, grade };
     }
 
     void Game::Finish() {
@@ -253,8 +260,8 @@ namespace Hammurabi {
 
             std::string str = "";
             char ch;
-            Helpers::prints("Нажмите [ESCAPE], чтобы выйти");
-            while ((ch = std::cin.get()) != 27) {
+            Helpers::prints("Введите [q], чтобы выйти");
+            while ((ch = std::cin.get()) != 113) {
                 str += ch;
             }
 

@@ -11,8 +11,13 @@
 
 namespace Helpers {
 
-    std::filesystem::path getFullPath(std::string& filepath) {
+    std::filesystem::path getFullPath(const std::string& filepath) {
         return std::filesystem::current_path() / filepath;
+    }
+
+    bool removeFile(const std::string& filepath) {
+        auto fullPath = getFullPath(filepath);
+        return std::filesystem::remove(filepath);
     }
 
     void drawFile(std::string filepath) {

@@ -16,10 +16,10 @@ namespace Helpers {
 
     void clearConsole();
 
-    std::filesystem::path getFullPath(std::string& filepath);
+    std::filesystem::path getFullPath(const std::string& filepath);
+    bool removeFile(const std::string& filepath);
     val_t randRange(val_t from, val_t to);
     float_t randRange(float_t from, float_t to);
-
     std::string& ltrim(std::string& s);
     std::string& rtrim(std::string& s);
     std::string trim(std::string s);
