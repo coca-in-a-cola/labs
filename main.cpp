@@ -1,9 +1,10 @@
 #include <iostream>
 #include <locale>
-#include "Hammurabi/Hammurabi.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "Shared/Helpers.h"
+#include "Hammurabi/Hammurabi.h"
 
 int main() {
     #ifdef _WIN32
@@ -14,5 +15,11 @@ int main() {
 
     std::locale::global(std::locale("en_US.UTF-8"));
 
-    return Hammurabi::main();
+    while (true) {
+        auto labNumber = Helpers::input<val_t>("Введите номер лабораторной (1-4)");
+
+        if (labNumber == 1) {
+            return Hammurabi::main();
+        }
+    }
 }
