@@ -1,24 +1,30 @@
 cmake_minimum_required(VERSION 3.10)
+project(Array LANGUAGES CXX)
 
-project(Array LANGUAGES CXX)  # Явно указываем C++
+# Header-only library
+add_library(${PROJECT_NAME} INTERFACE)
 
-# Ищем исходные файлы
-file(GLOB_RECURSE ARR_SOURCES 
-    "*.hpp"
-    "*.inl"
-    "*.cpp"
+target_include_directories(${PROJECT_NAME} INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
 
-# Создаем библиотеку
-add_library(${PROJECT_NAME} ${ARR_SOURCES})
+# ---- Tests (optional) ----
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-# Явно указываем язык цели
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-
-# Заголовочные файлы
-target_include_directories(Array
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
+file(GLOB_RECURSE ${PROJECT_NAME}_TEST_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cxx"
 )
 
-message(STATUS "${PROJECT_NAME} sources: ${ARR_SOURCES}")
+add_executable(${PROJECT_NAME}Tests ${${PROJECT_NAME}_TEST_SOURCES})
+target_link_libraries(${PROJECT_NAME}Tests PRIVATE ${PROJECT_NAME} GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME}Tests)

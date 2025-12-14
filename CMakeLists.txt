@@ -29,16 +29,14 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         Shared
         Hammurabi
+        Array
 )
 
-# Устанавливаем пути для include файлов
 target_include_directories(${PROJECT_NAME}
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Shared
-        ${CMAKE_CURRENT_SOURCE_DIR}/Hammurabi
-        ${CMAKE_CURRENT_SOURCE_DIR}/Shared/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/Hammurabi/include
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
 
 # Для отладки - проверяем что все найдено
 message(STATUS "Project name: ${PROJECT_NAME}")
@@ -70,3 +68,5 @@ else()
     # Создаем пустую директорию для сборки
     file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data")
 endif()
+
+enable_testing()

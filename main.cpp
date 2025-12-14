@@ -5,8 +5,9 @@
 #endif
 #include "Shared/Helpers.h"
 #include "Hammurabi/Hammurabi.h"
+#include "Array/main.hpp"
 
-int main() {
+int main(int argc, char ** argv) {
     #ifdef _WIN32
         // Настройка консоли Windows на UTF-8
         SetConsoleOutputCP(CP_UTF8);
@@ -20,6 +21,10 @@ int main() {
 
         if (labNumber == 1) {
             return Hammurabi::main();
+        }
+
+        if (labNumber == 2) {
+            return YAR::main(argc, argv);
         }
     }
 }
