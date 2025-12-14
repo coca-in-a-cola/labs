@@ -14,7 +14,7 @@ namespace Hammurabi {
         _inputData = InputData{};
     }
 
-    void Game::Load() {
+    void Game::load() {
         GameData gameData;
         auto hasSave = Helpers::loadObject<GameData>(gameData, AUTOSAVE_LOCATION);
 
@@ -31,24 +31,24 @@ namespace Hammurabi {
         _data = initialGameData;
     }
 
-    void Game::Autosave() {
+    void Game::autosave() {
         Helpers::saveObject<GameData>(_data, AUTOSAVE_LOCATION);
     }
 
-    void Game::Run() {
+    void Game::run() {
         while (_isRunning) {
-            PreRender();
-            Render();
-            ProcessInput();
-            Update();
-            PostUpdate();
-            Autosave();
+            preRender();
+            render();
+            processInput();
+            update();
+            postUpdate();
+            autosave();
         }
 
-        Finish();
+        finish();
     }
 
-    void Game::ProcessInput() {
+    void Game::processInput() {
         Helpers::printsh("Что прикажешь, повелитель?");
         bool isValidInput = false;
 
@@ -59,7 +59,7 @@ namespace Hammurabi {
             auto eatBushels = Helpers::input<val_t>("> Сколько бушелей пшеницы повелеваешь съесть?");
             auto plantAcres = Helpers::input<val_t>("> Сколько акров земли повелеваешь засеять?");
             _inputData = { buyAcres, eatBushels, plantAcres };
-            isValidInput = ValidateInput();
+            isValidInput = validateInput();
 
             if (!isValidInput) {
                 Helpers::clearConsole();
@@ -74,7 +74,7 @@ namespace Hammurabi {
         }
     }
 
-    bool Game::ValidateInput() {
+    bool Game::validateInput() {
         if (_inputData.buyAcres < 0 || _inputData.plantAcres < 0 || _inputData.eatBushels < 0) {
             return false;
         }
@@ -95,12 +95,12 @@ namespace Hammurabi {
         return true;
     }
 
-    void Game::PreRender() {
+    void Game::preRender() {
         auto arcPrice = Helpers::randRange(INCREACE_MIN, INCREACE_MAX);
         _data.arcPrice = arcPrice;
     }
 
-    void Game::Update() {
+    void Game::update() {
 
         GameData newData = {};
 
@@ -132,25 +132,25 @@ namespace Hammurabi {
             newData.population *= PLAGUE_MORTALITY;
         }
 
-        CheckCrit(newData);
-        CalculateStats(newData);
+        checkCrit(newData);
+        calculateStats(newData);
         newData.year = ++_data.year;
         _data = newData;
     }
 
-    void Game::PostUpdate() {
+    void Game::postUpdate() {
         if (!_timeleft) {
             _isRunning = false;
         }
     }
 
-    void Game::CheckCrit(const GameData& newData) {
+    void Game::checkCrit(const GameData& newData) {
         if (newData.decline >= _data.population * DEATH_CRIT_COEF) {
             _isRunning = false;
         }
     }
 
-    void Game::CalculateStats(const GameData& newData) {
+    void Game::calculateStats(const GameData& newData) {
         float_t currentDeathRate = newData.decline / _data.population;
         float_t acresPerCitizen = newData.arces / _data.population ;
         
@@ -170,7 +170,7 @@ namespace Hammurabi {
         _stats = { deathRate, acresPerCitizen, grade };
     }
 
-    void Game::Finish() {
+    void Game::finish() {
         Helpers::clearConsole();
         Helpers::removeFile(AUTOSAVE_LOCATION);
 
@@ -194,14 +194,14 @@ namespace Hammurabi {
         char c = Helpers::input<char>("Игра окончена. Ваши последние слова");
     }
 
-    void Game::Render() {
+    void Game::render() {
         Helpers::clearConsole();
         Helpers::drawFile("../data/render.txt");
 
         Helpers::printsh("Мой повелитель, соизволь поведать тебе");
         Helpers::prints("В году {} твоего высочайшего правления", _data.year);
 
-        RenderDeclineIncreace();
+        renderDeclineIncreace();
 
         if (_data.is_plague) {
             Helpers::printsh("Чума уничтожила половину населения!");
@@ -223,7 +223,7 @@ namespace Hammurabi {
         Helpers::prints("1 акр земли стоит сейчас {} бушель", _data.arcPrice);
     }
 
-    void Game::RenderDeclineIncreace() {
+    void Game::renderDeclineIncreace() {
         if (!_data.decline && !_data.increace) {
             return;
         }
@@ -247,8 +247,8 @@ namespace Hammurabi {
             Helpers::drawFile("../data/main.txt");
             std::cin.get();
 
-            game.Load();
-            game.Run();
+            game.load();
+            game.run();
             return 0;
         }
         catch (...) {

@@ -13,26 +13,26 @@ namespace Hammurabi {
     public:
         Game();
         
-        void Load();
-        void Run();
-        void Autosave();
+        void load();
+        void run();
+        void autosave();
     private:
         GameData _data;
         InputData _inputData;
         Stats _stats = { .0f, .0f, 0 };
         val_t _timeleft = GAME_DURATION;
 
-        void ProcessInput();
-        bool ValidateInput();
-        void PostUpdate();
-        void CheckCrit(const GameData& newData);
-        void CalculateStats(const GameData& newData);
+        void processInput();
+        bool validateInput();
+        void postUpdate();
+        void checkCrit(const GameData& newData);
+        void calculateStats(const GameData& newData);
 
-        void Update();
-        void Render();
-        void PreRender();
-        void RenderDeclineIncreace();
-        void Finish();
+        void update();
+        void render();
+        void preRender();
+        void renderDeclineIncreace();
+        void finish();
         bool _isRunning = true;
     };
 
