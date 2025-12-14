@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Array.hpp"
 #include "../Shared/Helpers.h"
 

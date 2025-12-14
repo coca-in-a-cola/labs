@@ -31,6 +31,7 @@ target_link_libraries(${PROJECT_NAME}
         Shared
         Hammurabi
         Array
+        Sort
 )
 
 target_include_directories(${PROJECT_NAME}

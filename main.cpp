@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <locale>
 #ifdef _WIN32
@@ -6,6 +8,7 @@
 #include "Shared/Helpers.h"
 #include "Hammurabi/Hammurabi.h"
 #include "Array/main.hpp"
+#include "Sort/main.hpp"
 
 int main(int argc, char ** argv) {
     #ifdef _WIN32
@@ -17,7 +20,7 @@ int main(int argc, char ** argv) {
     std::locale::global(std::locale("en_US.UTF-8"));
 
     while (true) {
-        auto labNumber = Helpers::input<val_t>("Введите номер лабораторной (1-4)");
+        auto labNumber = Helpers::input<val_t>("Введите номер лабораторной (1-3)");
 
         if (labNumber == 1) {
             return Hammurabi::main();
@@ -25,6 +28,10 @@ int main(int argc, char ** argv) {
 
         if (labNumber == 2) {
             return YAR::main(argc, argv);
+        }
+
+        if (labNumber == 3) {
+            return Sort::main(argc, argv);
         }
     }
 }

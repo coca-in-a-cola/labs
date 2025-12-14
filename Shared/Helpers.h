@@ -59,7 +59,9 @@ namespace Helpers {
     void printsh(const std::string& message, Args&&... args) {
         return prints("\033[3;42;30m" + message + "\033[0m\t\t", std::forward<Args>(args)...);
     }
-    
+
+    val_t random();
+
     template<typename T>
     T input(std::string message = "") {
         if (!empty(message)) std::cout << message << " : ";

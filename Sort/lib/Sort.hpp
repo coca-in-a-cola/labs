@@ -1,3 +1,6 @@
+#pragma once
+#include "Partition.hpp"
+
 namespace Sort {
     template<typename T, typename Compare>
     inline void insertionsSort(T *first, T *last, Compare comp) {
@@ -14,58 +17,50 @@ namespace Sort {
     }
 
     template <class T, class Compare>
-    inline T* medianOfThree(T* a, T* b, T* c, Compare comp) {
-        if (comp(*a, *b)) {
-            if (comp(*b, *c)) return b;
-            if (comp(*a, *c)) return c;
-            return a;
-        }
+    void quickSort(T* first, T* last, Compare comp) {
+        while (true) {
+            const auto n = last - first;
+            if (n <= 1) return;
 
-        if (comp(*a, *c)) return a;
-        if (comp(*b, *c)) return c;
-        return b;
-    }
+            auto [lt, gt] = partition3(first, last, comp);
 
-    template <class T, class Compare>
-    inline T* partrition(T *first, T *last, Compare comp) {
-        auto mid = first + (last - first) / 2;
-        auto pivotPointer = medianOfThree(first, mid, last - 1, comp);
-        auto pivot = std::move(*pivotPointer);
+            auto leftBegin = first;
+            auto leftEnd = lt;
+            auto rightBegin = gt;
+            auto rightEnd = last;
 
-        auto i = first;
-        auto j = last - 1;
-
-        while(true) {
-            while(comp(*i, pivot)) ++i;
-            while(comp(pivot, *j)) --j;
-
-            if (i >= j) {
-                *pivotPointer = std::move(pivot);
-                return ++j;
+            if (leftBegin == leftEnd) {
+                first = rightBegin;
+                last = rightEnd;
+                continue;
             }
 
-            std::swap(*i, *j);
-            ++i;
-            --j;
+            if (rightBegin == rightEnd) {
+                first = leftBegin;
+                last = rightBegin;
+                continue;
+            }
+
+            if ((leftEnd - leftBegin) < (rightEnd - rightBegin)) {
+                sort(leftBegin, leftEnd, comp);
+                first = rightBegin;
+                last = rightEnd;
+                continue;
+            }
+
+            sort(rightBegin, rightEnd, comp);
+            first = leftBegin;
+            last = leftEnd;
         }
     }
 
     template <class T, class Compare>
     void sort(T* first, T* last, Compare comp) {
-        while (true) {
-            const std::ptrdiff_t n = last - first;
-            if (n <= 1) return;
-
-            T* cut = partition(first, last, comp);
-
-            // Tail recursion elimination
-            if ((cut - first) < (last - cut)) {
-                sort(first, cut, comp);
-                first = cut;
-            } else {
-                sort(cut, last, comp);
-                last = cut;
-            }
+        const auto n = last - first;
+        if (n <= 1) {
+            return;
         }
+
+        return quickSort(first, last, comp);
     }
 }

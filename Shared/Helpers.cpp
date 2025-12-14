@@ -35,6 +35,11 @@ namespace Helpers {
         }
     }
 
+    val_t random() {
+        srand(static_cast <unsigned> (time(0)));
+        return rand();
+    }
+
     val_t randRange(val_t from, val_t to) {
         srand(static_cast <unsigned> (time(0)));
         return from + (rand() % (to - from));
