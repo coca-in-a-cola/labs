@@ -1,50 +1,72 @@
 #pragma once
 
 #include <chrono>
+#include <iostream>
 #include "Sort.hpp"
-#include "../Shared/Helpers.h"
-
-typedef int32_t int_t;
+#include "../Shared/Definitions.h"
+#include "RandomArray.hpp"
 
 namespace Sort {
-    int_t* randomArray(int_t length) {
-        auto result = new int_t[length];
 
-        for (int_t i = 0; i < length; ++i) {
-            result[i] = Helpers::random();
-        }
-
-        return result;
-    }
+    constexpr int_t N_MAX = 1000;
+    constexpr int_t REPEATS_MAX = 20;
 
     int main(int argc, char **argv) {
-        Helpers::printsh("Сравнение скорости выполнения quickSort и insertionsSort");
-        Helpers::prints("на массивах длиной от 0 до 100 [на примере int]");
+        std::cout << "Сравнение скорости выполнения quickSort и insertionsSort" << std::endl;
+        std::cout << "на массивах длиной от 0 до 100 [на примере int]" << std::endl;
 
-        std::chrono::steady_clock::time_point start;
-        std::chrono::steady_clock::time_point end;
+        using clock = std::chrono::steady_clock;
 
-        for (int_t n = 1; n <= 100; ++n) {
-            auto arr = randomArray(n);
+        // этот хак по идее частично отключает оптимизации компилятора
+        volatile int sink = 0;
+
+        float_t result = .0f;
+    
+        for (int_t n = 1; n <= N_MAX; ++n) {
+            constexpr int repeats = REPEATS_MAX;
+
+            auto base = randomArray(n);
+            auto arr  = new int_t[n];
             auto copy = new int_t[n];
 
-            std::copy(arr, arr + n, copy); 
+            std::chrono::nanoseconds tQuick{0}, tIns{0};
 
-            start = std::chrono::high_resolution_clock::now();
-            quickSort(arr, arr + n, [](int a, int b) { return a < b; });
-            end = std::chrono::high_resolution_clock::now();
+            for (int r = 0; r < repeats; ++r) {
+                std::copy(base, base + n, arr);
+                auto s1 = clock::now();
+                sort(arr, arr + n, [](int a,int b){ return a < b; });
+                auto e1 = clock::now();
+                tQuick += std::chrono::duration_cast<std::chrono::nanoseconds>(e1 - s1);
+                sink += arr[0];
 
-            auto diff1 = end - start;
+                std::copy(base, base + n, copy);
+                auto s2 = clock::now();
+                insertionsSort(copy, copy + n, [](int a,int b){ return a < b; });
+                auto e2 = clock::now();
+                tIns += std::chrono::duration_cast<std::chrono::nanoseconds>(e2 - s2);
+                sink += copy[0];
+            }
 
-            start = std::chrono::high_resolution_clock::now();
-            insertionsSort(copy, copy + n, [](int a, int b) { return a < b; });
-            end = std::chrono::high_resolution_clock::now();
+            auto avgQuickTime = tQuick.count() / repeats;
+            auto avgInsTime = tIns.count() / repeats;
 
-            auto diff2 = end - start;
+            auto currentResult = (1 - (float)avgQuickTime / (float)avgInsTime) * 100.0f;
+            result = (result * (n - 1) + currentResult) / n;
 
-            std::cout << diff1 << "          " << diff2 << std::endl;
+            std::cout << n << "  quick(ns/run)=" << (tQuick.count() / repeats)
+                    << "  ins(ns/run)=" << (tIns.count() / repeats) << std::endl;
+
+            delete[] base;
+            delete[] arr;
+            delete[] copy;
         }
 
+        Helpers::printsh(
+            "QuickSort быстрее InsertSort на {}% при рзмерах 1...{} и пороге {}",
+            std::round(result),
+            N_MAX,
+            INSERTION_TRESHOLD
+        );
         Helpers::prints("запустите через google tests, чтобы увидеть тесты");
         return 0;
     }

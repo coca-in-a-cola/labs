@@ -5,10 +5,9 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include "../../Shared/Definitions.h"
 
 namespace YAR {
-
-    typedef int32_t int_t;
 
     template <class T>
     class Array final {

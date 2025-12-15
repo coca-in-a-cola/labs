@@ -19,8 +19,9 @@ namespace Sort {
     // то есть условно три группы < == и >
     template <class T, class Compare>
     inline std::pair<T*, T*> partition3(T* first, T* last, Compare comp) {
-        auto pivotPointer = first + (last - first) / 2;
-        auto pivot = std::move(*pivotPointer);
+        auto middle = first + (last - first) / 2;
+        auto pivotPointer = medianOfThree(first, middle, last - 1, comp);
+        auto pivot = *pivotPointer;
 
         auto leftSide = first;
         auto index  = first;
@@ -37,12 +38,6 @@ namespace Sort {
             } else {
                 ++index;
             }
-        }
-
-        if (leftSide < last) {
-            *leftSide = std::move(pivot);
-        } else {
-            *first = std::move(pivot);
         }
 
         return {leftSide, rightSide};

@@ -13,6 +13,8 @@ namespace YAR {
         a.insert(50);
         Helpers::prints(a.to_string());
         Helpers::prints("запустите через google tests, чтобы увидеть тесты");
+        std::getchar();
+        std::getchar();
         return 0;
     }
 }

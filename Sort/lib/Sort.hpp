@@ -1,7 +1,10 @@
 #pragma once
 #include "Partition.hpp"
+#include "../../Shared/Definitions.h"
 
 namespace Sort {
+    static constexpr int_t INSERTION_TRESHOLD = 32;
+
     template<typename T, typename Compare>
     inline void insertionsSort(T *first, T *last, Compare comp) {
         for (T *i = first + 1; i < last; ++i) {
@@ -37,7 +40,7 @@ namespace Sort {
 
             if (rightBegin == rightEnd) {
                 first = leftBegin;
-                last = rightBegin;
+                last = leftEnd;
                 continue;
             }
 
@@ -57,7 +60,13 @@ namespace Sort {
     template <class T, class Compare>
     void sort(T* first, T* last, Compare comp) {
         const auto n = last - first;
+
         if (n <= 1) {
+            return;
+        }
+
+        if (n <= INSERTION_TRESHOLD) {
+            insertionsSort(first, last, comp);
             return;
         }
 

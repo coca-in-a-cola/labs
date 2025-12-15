@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "Helpers.h"
+#include "Definitions.h"
 
 namespace Helpers {
 

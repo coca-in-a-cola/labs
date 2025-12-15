@@ -6,9 +6,8 @@
 #include <string.h>
 #include <chrono>
 #include <thread>
+#include "Definitions.h"
 
-typedef int32_t val_t;
-typedef float float_t;
 constexpr val_t PRINTS_DELAY_MS = 10;
 
 namespace Helpers {
