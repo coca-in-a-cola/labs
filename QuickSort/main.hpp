@@ -67,6 +67,7 @@ namespace Sort {
             INSERTION_TRESHOLD
         );
         Helpers::prints("запустите через google tests, чтобы увидеть тесты");
+        Helpers::input<std::string>("");
         return 0;
     }
 }
