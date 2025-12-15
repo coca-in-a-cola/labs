@@ -2,12 +2,11 @@
 
 #include <chrono>
 #include <iostream>
-#include "Sort.hpp"
+#include "./lib/Sort.hpp"
 #include "../Shared/Definitions.h"
 #include "RandomArray.hpp"
 
 namespace Sort {
-
     constexpr int_t N_MAX = 1000;
     constexpr int_t REPEATS_MAX = 20;
 

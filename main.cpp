@@ -8,7 +8,7 @@
 #include "Shared/Helpers.h"
 #include "Hammurabi/Hammurabi.h"
 #include "Array/main.hpp"
-#include "Sort/main.hpp"
+#include "QuickSort/main.hpp"
 
 int main(int argc, char ** argv) {
     #ifdef _WIN32

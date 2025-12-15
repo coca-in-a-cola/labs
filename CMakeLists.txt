@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 project(labs VERSION 1.0.0 LANGUAGES CXX)  # Явно указываем C++
-
 # Настройки компилятора для C++
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+enable_testing()
 
 # Установка выходных директорий
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -15,7 +16,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(Shared)
 add_subdirectory(Hammurabi)
 add_subdirectory(Array)
-add_subdirectory(Sort)
+add_subdirectory(QuickSort)
 
 # Основной исполняемый файл - добавляем конкретные исходные файлы
 add_executable(${PROJECT_NAME} 
@@ -31,7 +32,7 @@ target_link_libraries(${PROJECT_NAME}
         Shared
         Hammurabi
         Array
-        Sort
+        QuickSort
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -70,5 +71,3 @@ else()
     # Создаем пустую директорию для сборки
     file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data")
 endif()
-
-enable_testing()
