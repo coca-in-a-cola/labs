@@ -44,7 +44,7 @@ namespace Helpers {
 
     template<typename... Args>
     void prints(const std::string& message, Args&&... args) {
-        auto formatted = std::vformat(message, std::make_format_args(std::forward<Args>(args)...));
+        auto formatted = std::vformat(message, std::make_format_args(args...));
 
         for (char c : formatted) {
             std::cout << c << std::flush;

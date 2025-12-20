@@ -7,7 +7,16 @@ target_include_directories(${PROJECT_NAME} INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
 
-# ---- Tests
+# ---- asciichart как header-only зависимость ----
+add_library(asciichart INTERFACE)
+target_include_directories(asciichart INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/asciichart/include"
+)
+
+# QuickSort "знает", что ему нужна asciichart
+target_link_libraries(${PROJECT_NAME} INTERFACE asciichart)
+
+# ---- Tests ----
 include(FetchContent)
 FetchContent_Declare(
   googletest

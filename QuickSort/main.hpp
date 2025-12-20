@@ -20,7 +20,12 @@ namespace Sort {
         volatile int sink = 0;
 
         float_t result = .0f;
-    
+
+        auto csvPath = Helpers::getFullPath("../data/graph.csv");
+        std::ofstream csv(csvPath);
+        csv.imbue(std::locale::classic());
+        csv << "n,quick_ns_per_run,ins_ns_per_run\n";
+
         for (int_t n = 1; n <= N_MAX; ++n) {
             constexpr int repeats = REPEATS_MAX;
 
@@ -52,8 +57,7 @@ namespace Sort {
             auto currentResult = (1 - (float)avgQuickTime / (float)avgInsTime) * 100.0f;
             result = (result * (n - 1) + currentResult) / n;
 
-            std::cout << n << "  quick(ns/run)=" << (tQuick.count() / repeats)
-                    << "  ins(ns/run)=" << (tIns.count() / repeats) << std::endl;
+            csv << n << ',' << avgQuickTime << ',' << avgInsTime << '\n';
 
             delete[] base;
             delete[] arr;
@@ -68,6 +72,8 @@ namespace Sort {
         );
         Helpers::prints("запустите через google tests, чтобы увидеть тесты");
         Helpers::input<std::string>("");
+
+        csv.close();
         return 0;
     }
 }
